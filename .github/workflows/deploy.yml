@@ -4,42 +4,46 @@ on:
   push:
     branches: [ main ]
 
+# 必需权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# 并发设置
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
+  # 构建任务
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4  # 更新到 v4
+      - name: Checkout code
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v4  # 更新到 v4
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-        
+          
       - name: Install dependencies
-        run: npm install
-        
+        run: npm ci
+      
       - name: Build project
         run: npm run build
-        
+      
       - name: Setup Pages
-        uses: actions/configure-pages@v3  # 更新到 v3
+        uses: actions/configure-pages@v3
         
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2  # 更新到 v2
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
+  # 部署任务
   deploy:
     environment:
       name: github-pages
@@ -49,4 +53,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2  # 更新到 v2
+        uses: actions/deploy-pages@v4

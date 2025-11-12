@@ -4,21 +4,24 @@ on:
   push:
     branches: [ main ]
 
-# 必需权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 并发设置
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # 构建任务
   build:
     runs-on: ubuntu-latest
+    # 🔥 添加环境变量
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      VITE_DEEPSEEK_API_KEY: ${{ secrets.VITE_DEEPSEEK_API_KEY }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,7 +46,6 @@ jobs:
         with:
           path: ./dist
 
-  # 部署任务
   deploy:
     environment:
       name: github-pages

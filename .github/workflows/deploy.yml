@@ -16,12 +16,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # 🔥 添加环境变量
-    env:
-      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-      VITE_DEEPSEEK_API_KEY: ${{ secrets.VITE_DEEPSEEK_API_KEY }}
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,8 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
+      - name: Create env file
+        run: |
+          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" > .env
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env
+          echo "VITE_DEEPSEEK_API_KEY=${{ secrets.VITE_DEEPSEEK_API_KEY }}" >> .env
+      
       - name: Build project
         run: npm run build
+      
+      - name: Cleanup env file
+        run: rm -f .env
       
       - name: Setup Pages
         uses: actions/configure-pages@v3
